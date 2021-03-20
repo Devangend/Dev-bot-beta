@@ -1,129 +1,141 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import discord
+import os
+import requests
+import json
+import random
+from replit import db
 
-# C extensions
-*.so
+client = discord.Client()
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+starter_gaynes = [
+"You gaynes detected 100%",
+"You gaynes detected 23%",
+"You gaynes detected 10%",
+"You gaynes detected 95%",
+"You gaynes detected 7%",
+"You gaynes detected 2%",
+"You gaynes detected 45%",
+"You gaynes detected 68%",
+"You gaynes detected 55%",
+"You gaynes detected is Infinity"
+]
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+sad_words = ["sad", "depressed", "unhappy", "angry", "miserable"]
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+starter_encouragements = [
+  "Cheer up!",
+  "Hang in there.",
+  "You are a great person / bot!"
+]
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
+funny_words = ["lol","Lol","haha"]
+starter_funny = [
+  "HAHAHAHA",
+  "LOL",
+  "😂"
+]
 
-# Translations
-*.mo
-*.pot
+talk_words = ["Im good","im good","fine","Fine","good","Good"]
+starter_talk = [
+  "```How nice, lets start the day with good staff ; u can start by type : $help```"
+]
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+good_words = ["thank you","Thank you","how nice","How nice","Noice", "noice"]
+starter_good = [
+  "```No problem```",
+  "```Is good to see u happy```",
+  "```How great !```"
+]
 
-# Flask stuff:
-instance/
-.webassets-cache
+if "responding" not in db.keys():
+  db["responding"] = True
 
-# Scrapy stuff:
-.scrapy
+def update_encouragements(encouraging_message):
+  if "encouragements" in db.keys():
+    encouragements = db["encouragements"]
+    encouragements.append(encouraging_message)
+    db["encouragements"] = encouragements
+  else:
+    db["encouragements"] = [encouraging_message]
 
-# Sphinx documentation
-docs/_build/
+def delete_encouragment(index):
+  encouragements = db["encouragements"]
+  if len(encouragements) > index:
+    del encouragements[index]
+  db["encouragements"] = encouragements
 
-# PyBuilder
-target/
+def get_quote():
+  response = requests.get("https://zenquotes.io/api/random")
+  json_data = json.loads(response.text)
+  quote = json_data[0]['q'] + " -" + json_data[0]['a']
+  return(quote)
 
-# Jupyter Notebook
-.ipynb_checkpoints
+@client.event
+async def on_ready():
+  print('We have logged in as {0.user}'.format(client))
 
-# IPython
-profile_default/
-ipython_config.py
+@client.event
 
-# pyenv
-.python-version
+async def on_message(message):
+  if message.author == client.user:
+    return
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+  msg = message.content    
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
+  if msg.startswith('$inspire'):
+    quote = get_quote()
+    await message.channel.send(quote)
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+  options = starter_encouragements
+  if "encouragements" in db.keys():
+    options = options + db["encouragements"]  
+    
+  if any(word in msg for word in sad_words):
+    await message.channel.send(random.choice(starter_encouragements))
 
-# SageMath parsed files
-*.sage.py
+  if msg.startswith("$new"):
+    encouraging_message = msg.split("$new ",1)[1]
+    update_encouragements(encouraging_message)
+    await message.channel.send("New encouraging message added.")
+  
+  if msg.startswith("$del"):
+    encouragements = []
+    if "encouragements" in db.keys():
+      index = int(msg.split("$del",1)[1])
+      delete_encouragment(index)
+      encouragements = db["encouragements"]
+    await message.channel.send(encouragements)
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+  if msg.startswith('$hello'):
+    await message.channel.send('```Hello thare How are you 👋🏻 ```')
 
-# Spyder project settings
-.spyderproject
-.spyproject
+  if any(word in msg for word in talk_words):
+    await message.channel.send(random.choice(starter_talk))  
 
-# Rope project settings
-.ropeproject
+  if msg.startswith('$invite'):
+    await message.channel.send('https://discord.com/api/oauth2/authorize?client_id=822259567400189992&permissions=519232&scope=bot')
+    
+  if any(word in msg for word in funny_words):
+    await message.channel.send(random.choice(starter_funny))  
 
-# mkdocs documentation
-/site
+    
+  if msg.startswith('$help'):
+    await message.channel.send('```✨ Hi User ✨``` ```✨Here some guide of the bot command,✨``` ```✨The prafix of each command is ($)✨``` ```✨| Command :$help ,$hello ,$inspire ,$invite ,$creator ,$gay|✨``` ```✨The creator will update some command later ✨``` ```✨Bot created at [17/3/2020]✨```')  
+    
+  if msg.startswith('$creator'):
+    await message.channel.send('The creator of the Dev Bot > DEVAN ✨#1713')
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+  if msg.startswith('$gay'):
+    await message.channel.send(random.choice(starter_gaynes))
 
-# Pyre type checker
-.pyre/
+  if msg.startswith("$responding"):
+    value = msg.split("$responding ",1)[1]
+
+    if value.lower() == "true":
+      db["responding"] = True
+      await message.channel.send("Responding is on.")
+    else:
+      db["responding"] = False
+      await message.channel.send("Responding is off.")
+  
+client.run(os.getenv('TOKEN'))
