@@ -7,6 +7,20 @@ from replit import db
 
 client = discord.Client()
 
+starter_kill = [
+  "https://tenor.com/view/nichijou-minigun-comedy-anime-fuck-you-gif-14778256",
+  "https://cdn.weeb.sh/images/B1qosktwb.gif",
+  "https://cdn.weeb.sh/images/B1VnoJFDZ.gif",
+  "https://cdn.weeb.sh/images/BJO2j1Fv-.gif"
+]
+
+starter_bruh = [
+  "https://tenor.com/view/bruh-bye-ciao-gif-5156041",
+  "https://tenor.com/view/touchdown-bruh-really-gif-12484222",
+  "https://tenor.com/view/blank-stare-really-i-dont-believe-you-side-eye-looking-gif-6151149",
+  "https://tenor.com/view/bruh-bruh-triggered-bruh-bttv-meme-gif-16887494"
+] 
+
 starter_gaynes = [
 "You gaynes detected 100%",
 "You gaynes detected 23%",
@@ -120,13 +134,19 @@ async def on_message(message):
 
     
   if msg.startswith('$help'):
-    await message.channel.send('```✨ Hi User ✨``` ```✨Here some guide of the bot command,✨``` ```✨The prafix of each command is ($)✨``` ```✨| Command :$help ,$hello ,$inspire ,$invite ,$creator ,$gay|✨``` ```✨The creator will update some command later ✨``` ```✨Bot created at [17/3/2020]✨```')  
+    await message.channel.send('```✨ Hi User ✨``` ```✨Here some guide of the bot command,✨``` ```✨The prafix of each command is ($)✨``` ```✨| Command :$help ,$hello ,$inspire ,$invite ,$creator ,$gay ,$bruh ,$kill  |✨``` ```✨The creator will update some command later ✨``` ```✨Bot created at [17/3/2020]✨```')  
     
   if msg.startswith('$creator'):
     await message.channel.send('The creator of the Dev Bot > DEVAN ✨#1713')
 
   if msg.startswith('$gay'):
     await message.channel.send(random.choice(starter_gaynes))
+
+  if msg.startswith('$bruh'):
+    await message.channel.send(random.choice(starter_bruh))  
+
+  if msg.startswith('$kill'):
+    await message.channel.send(random.choice(starter_kill))  
 
   if msg.startswith("$responding"):
     value = msg.split("$responding ",1)[1]
