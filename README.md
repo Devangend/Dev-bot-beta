@@ -5,4 +5,4 @@ this is jus a learning cod ...
 - first time coding using phython 
 
 
--ignore that .gitnore
+-ignore that .gitignore
