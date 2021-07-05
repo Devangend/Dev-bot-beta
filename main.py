@@ -1,0 +1,193 @@
+import discord
+import os
+import requests
+import json
+import random
+from replit import db
+from keep_alive import keep_alive
+
+client = discord.Client()
+
+starter_wut = [
+  "https://tenor.com/view/anime-tanjiro-demon-slayer-kimetsu-no-yaiba-disgust-gif-15052547",
+  "https://tenor.com/view/nick-young-whuut-huuh-what-nani-gif-16797313",
+  "https://tenor.com/view/confused-what-nigga-please-really-loop-gif-4966361"
+]
+
+starter_die = [
+  "https://tenor.com/view/kill-yourself-killing-me-smalls-bowing-godfather-xoxo-gif-13754720",
+  "https://tenor.com/view/die-reaper-spinning-rotate-overwatch-gif-17444526"
+]
+
+starter_kill = [
+  "https://tenor.com/view/nichijou-minigun-comedy-anime-fuck-you-gif-14778256",
+  "https://cdn.weeb.sh/images/B1qosktwb.gif",
+  "https://cdn.weeb.sh/images/B1VnoJFDZ.gif",
+  "https://cdn.weeb.sh/images/BJO2j1Fv-.gif"
+]
+
+starter_bruh = [
+  "https://tenor.com/view/bruh-bye-ciao-gif-5156041",
+  "https://tenor.com/view/touchdown-bruh-really-gif-12484222",
+  "https://tenor.com/view/blank-stare-really-i-dont-believe-you-side-eye-looking-gif-6151149",
+  "https://tenor.com/view/bruh-bruh-triggered-bruh-bttv-meme-gif-16887494"
+] 
+
+starter_gaynes = [
+"You gaynes detected 100%",
+"You gaynes detected 23%",
+"You gaynes detected 10%",
+"You gaynes detected 95%",
+"You gaynes detected 7%",
+"You gaynes detected 2%",
+"You gaynes detected 45%",
+"You gaynes detected 68%",
+"You gaynes detected 55%",
+"You gaynes detected 32%",
+"You gaynes detected 17",
+"You gaynes detected is Infinity",
+"You the most gay in this server"
+]
+
+sad_words = ["sad", "depressed", "unhappy", "angry", "miserable"]
+
+starter_encouragements = [
+  "Cheer up!",
+  "Hang in there.",
+  "You are a great person / bot!"
+]
+
+funny_words = ["lol","Lol","haha","LOL"]
+starter_funny = [
+  "HAHAHAHA",
+  "LOL",
+  "😂"
+]
+
+talk_words = ["Im good","im good","im fine","Fine"]
+starter_talk = [
+  "```How nice, lets start the day with good staff ; u can start by type : $help```"
+]
+
+good_words = ["thank you","Thank you","how nice","How nice","Noice", "noice"]
+starter_good = [
+  "```No problem```",
+  "```Is good to see u happy```",
+  "```How great !```"
+]
+
+if "responding" not in db.keys():
+  db["responding"] = True
+
+def update_encouragements(encouraging_message):
+  if "encouragements" in db.keys():
+    encouragements = db["encouragements"]
+    encouragements.append(encouraging_message)
+    db["encouragements"] = encouragements
+  else:
+    db["encouragements"] = [encouraging_message]
+
+def delete_encouragment(index):
+  encouragements = db["encouragements"]
+  if len(encouragements) > index:
+    del encouragements[index]
+  db["encouragements"] = encouragements
+
+def get_quote():
+  response = requests.get("https://zenquotes.io/api/random")
+  json_data = json.loads(response.text)
+  quote = json_data[0]['q'] + " -" + json_data[0]['a']
+  return(quote)
+
+@client.event
+async def on_ready():
+  print('We have logged in as {0.user}'.format(client))
+
+@client.event
+
+async def on_message(message):
+  if message.author == client.user:
+    return
+
+  msg = message.content    
+
+  if msg.startswith('$inspire'):
+    quote = get_quote()
+    await message.channel.send(quote)
+
+  options = starter_encouragements
+  if "encouragements" in db.keys():
+    options = options + db["encouragements"]  
+    
+  if any(word in msg for word in sad_words):
+    await message.channel.send(random.choice(starter_encouragements))
+
+  if msg.startswith("$new"):
+    encouraging_message = msg.split("$new ",1)[1]
+    update_encouragements(encouraging_message)
+    await message.channel.send("New encouraging message added.")
+  
+  if msg.startswith("$del"):
+    encouragements = []
+    if "encouragements" in db.keys():
+      index = int(msg.split("$del",1)[1])
+      delete_encouragment(index)
+      encouragements = db["encouragements"]
+    await message.channel.send(encouragements)
+
+  if msg.startswith('$hello'):
+    await message.channel.send('```Hello thare How are you 👋🏻 ```')
+
+  if any(word in msg for word in talk_words):
+    await message.channel.send(random.choice(starter_talk))  
+
+  if msg.startswith('$invite'):
+    await message.channel.send('https://discord.com/api/oauth2/authorize?client_id=822259567400189992&permissions=519232&scope=bot')
+    
+    
+  if msg.startswith('$help'):
+    await message.channel.send('```✨ Hi User ✨``` ```✨Here some guide of the bot command,✨``` ```✨The prafix of each command is ($)✨``` ```✨| Command :$help ,$hello ,$inspire ,$invite ,$creator ,$gay ,$bruh ,$kill ,$wut ,$die |✨``` ```✨The creator will update some command later ✨``` ```✨Bot created at [17/3/2020]✨```')  
+    
+  if msg.startswith('$creator'):
+    await message.channel.send('The creator of the Dev Bot > DEVAN ✨#1713')
+
+  if msg.startswith('$gay'):
+    await message.channel.send(random.choice(starter_gaynes))
+
+  if msg.startswith('$bruh'):
+    await message.channel.send(random.choice(starter_bruh))  
+
+  if msg.startswith('$kill'):
+    await message.channel.send(random.choice(starter_kill))  
+
+  if msg.startswith('$die'):
+    await message.channel.send(random.choice(starter_die))  
+
+  if msg.startswith('$wut'):
+    await message.channel.send(random.choice(starter_wut))
+
+  if any(word in msg for word in funny_words):
+    await message.channel.send(random.choice(starter_funny)) 
+
+  if msg.startswith('$rick'):
+    await message.channel.send('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+  if msg.startswith("$list"):
+    encouragements = []
+    if "encouragements" in db.keys():
+      encouragements = db["encouragements"]
+    await message.channel.send(encouragements) 
+
+  if msg.startswith("$responding"):
+    value = msg.split("$responding ",1)[1]
+
+    if value.lower() == "true":
+      db["responding"] = True
+      await message.channel.send("Responding is on.")
+    else:
+      db["responding"] = False
+      await message.channel.send("Responding is off.")
+      
+      
+keep_alive()
+client.run(os.getenv('TOKEN'))
